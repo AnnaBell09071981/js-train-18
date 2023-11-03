@@ -6,6 +6,11 @@
  *  data - вхідні дані.
  */
 function checkData(data) {
+  if(data.length === 0) {
+    const error = new TypeError("Об'єкт пустий");
+  } else {
+    return data;
+  }
   // Якщо об'єкт не пустий повертаємо дані
   // Інакше створюємо помилку,в якості тексту помилки ми використовуємо рядок "Об'єкт пустий".
   // Якщо виникла помилка, повертаємо її повідомлення.
@@ -26,6 +31,16 @@ console.log(checkData({ name: "John", age: 30, city: "New York" }));
  *  jsonStr - JSON-рядок для аналізу.
  */
 function parseJson(jsonStr) {
+  try {
+  let pars = JSON.parse(jsonStr);
+  
+} catch (error) {
+  const newError =  new Error(`Unexpected token a in JSON at position 15`, { 
+     cause: error,
+    });
+    console.log(newError.message);
+}
+console.log(jsonStr);
   // Спроба розпарсити JSON-рядок.
   // Якщо рядок має невірний формат, виникне помилка, яку ми обробляємо у блоку catch.
   // Повертаємо отриманий об'єкт
@@ -53,6 +68,15 @@ console.log(parseJson(invalidJson));
  *  age - вік користувача.
  */
 function getAge(age) {
+  try {
+    return age;
+  } catch (err) {
+    let name = "AgeError";
+    const newError = new Error(`Вік не може бути менше 0!, ${name}`, {
+      cause: err,
+    });
+    return `Вік користувача: ${age}`;
+  }
   // Спроба отримати вік користувача.
   // Якщо вік менше 0, виникне помилка, яку ми обробляємо у блоку catch.
   // Генеруємо помилку, якщо вік менше 0 з повідомленням Вік не може бути менше 0!.
