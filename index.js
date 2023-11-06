@@ -6,13 +6,15 @@
  *  data - вхідні дані.
  */
 function checkData(data) {
-    if(data.length === 0) {
-      const newError = new Error("Об'єкт пустий", {
-        cause: err,
-      });
-      return newError.message;
+  try {
+    if(Object.keys(data).length) {
+      return data;
+    } else {
+      throw new Error("Об'єкт пустий");
     }
-    return data;
+  } catch (err) {
+    return err.message;
+  }
   
   // Якщо об'єкт не пустий повертаємо дані
   // Інакше створюємо помилку,в якості тексту помилки ми використовуємо рядок "Об'єкт пустий".
@@ -70,16 +72,14 @@ console.log(parseJson(invalidJson));
 function getAge(age) {
   try {
     if(age < 0) {
-      return age;
+      let err = new Error(`Вік не може бути менше 0!`);
+      err.name = "AgeError";
+      throw err;
     }
+    return `Вік користувача: ${age}`;
   } catch (err) {
-    if(age > 0) {
-    let name = "AgeError";
-    const newError = new Error(`Вік не може бути менше 0!, ${name}`);
-    throw newError;
-  }
+    return { error: err.message, name: err.name };
 }
-return `Вік користувача: ${age}`;
   // Спроба отримати вік користувача.
   // Якщо вік менше 0, виникне помилка, яку ми обробляємо у блоку catch.
   // Генеруємо помилку, якщо вік менше 0 з повідомленням Вік не може бути менше 0!.
@@ -106,15 +106,13 @@ console.log(getAge(20));
  *  id - ID книги.
  */
 function getBookById(books, id) {
-  let book;
   try {
-   const bookid = books.array.filter(id => {
-      books.id === id;
-      book = books.id;
-    });
+    let book = books.find((book) => book.id === id);
+   if(!book) {
+    throw new TypeError(`Книга з ID ${id} не знайдена!`);
+   }
   } catch (err) {
-    const newError = new TypeError(`Книга з ID ${id} не знайдена!`);
-    return book, newError.message;
+    return err.toString();
   }
   // Спроба знайти книгу по ID та записати в змінну book.
   // Якщо книга не знайдена, генерується TypeError з повідомленням Книга з ID ${id} не знайдена!.
@@ -185,18 +183,17 @@ console.log(decodeURIComponentWrapper("%E0%A4%A")); // виведе інформ
  */
 function findEvenNumber(numbers) {
   let evenNumber;
-  let even = numbers.filter((number) => {
-    let num = number % 2;
-    if(num === 0) {
-      evenNumber = number;
-      return evenNumber;
+  try {
+    evenNumber = numbers.find((number) => number % 2 === 0);
+    if(evenNumber === undefined) {
+      throw new Error("У масиві немає чисел, що діляться на 2 без остачі!");
     }
-  });
-    const newError = new Error("У масиві немає чисел, що діляться на 2 без остачі!");
-    console.log(newError.message);
-  
-  console.log(evenNumber);
-  return numbers;
+    return evenNumber;
+  } catch (err) {
+    return err.toString();
+  } finally {
+    console.log(numbers);
+  }
   // Створюємо змінну evenNumber без значення
   // Шукаємо перше число, що ділиться на 2 без остачі, та записуємо в нашу змінну.
   // Якщо такого числа немає, кидаємо помилку з повідомлення У масиві немає чисел, що діляться на 2 без остачі!.
@@ -224,32 +221,26 @@ console.log(findEvenNumber([1, 4, 5]));
  *  user - Об'єкт користувача для перевірки.
  */
 function validateUser(user) {
-    let { name, email} = user;
-  if(user.length === 0) {
-    const newError = new Error("Об'єкт користувача не вказано!", {
-      cause: user,
-    });
-    throw newError;
-  }
-  if(user.name !== name) {
-    const newError = new Error("Ім'я користувача не вказано!", {
-      cause: user,
-    });
-    throw newError;
-  }
-  if(user.email !== email) {
-    const newError = new Error("Email користувача не вказано!", {
-      cause: user,
-    });
-    throw newError;
-  }
-  if(user.length !== 0 || user.includes(name) === true || user.includes(email) === true) {
-    return "Об'єкт користувача відповідає всім вимогам.";
-  }
-  console.log(newError.message);
+    try {
+      if(!user) {
+        throw new Error("Об'єкт користувача не вказано!");
+      }
+      if(!user.name) {
+        throw new Error("Ім'я користувача не вказано!", {
+          cause: user,
+        });
+      }
+      if(!user.email) {
+        throw new Error("Email користувача не вказано!", {
+          cause: user,
+        });
+      }
+    } catch (err) {
+      console.error(err.message, err.cause);
+    }
   // Перевіряємо, чи існує об'єкт користувача,якщо ні викидуємо помилку з повідомленням "Об'єкт користувача не вказано!".
   // Перевіряємо, чи існує ім'я користувача,якщо ні викидуємо помилку з повідомленням "Ім'я користувача не вказано!", а як причину вказуємо об'єкт user.
-  // Перевіряємо, чи існує email користувача,якщо ні викидуємо помилку з повідомленням "Email користувача не вказано!", а як причину вказуємо об'єкт user.
+  // Перевіряємо, чи існує email користувача,якщо ні викидуємо помилку з повідомленням "Ім'я користувача не вказано!", а як причину вказуємо об'єкт user.
   // Якщо всі перевірки пройдено успішно виводимо повідомлення "Об'єкт користувача відповідає всім вимогам."
   // Виводимо повідомлення про помилку та причину помилки.
 }
@@ -272,13 +263,11 @@ validateUser({ name: "John Doe" });
 function calculateSquareRoot(number) {
   if(typeof number !== "number") {
     const newError = new TypeError("Аргумент має бути числом!");
-    console.log(newError.message);
-    return number;
+    return newError.message;
   } 
   if(number < 0) {
     const newError = new TypeError("Число не повинно бути від'ємним!");
-    console.log(newError.message);
-    return number;
+    return newError.message;
   } 
   if(typeof number === "number" || number > 0) {
     return Math.sqrt(number);
